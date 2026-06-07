@@ -1,30 +1,58 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:my_app/main.dart';
+import 'package:image_color_extractor/image_color_extractor.dart';
+import 'package:my_app/bloc/palette/palette_bloc.dart';
+import 'package:my_app/bloc/palette/palette_event.dart';
+import 'package:my_app/bloc/palette/palette_state.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  late ExtractorEngine engine;
+  late PaletteBloc bloc;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  setUp(() {
+    engine = ExtractorEngine();
+    bloc = PaletteBloc(engine: engine);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  tearDown(() {
+    bloc.close();
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  group('PaletteBloc Unit Tests', () {
+    test('initial state should be PaletteInitial', () {
+      expect(bloc.state, isA<PaletteInitial>());
+    });
+
+    test('ExtractPaletteFromImage event should emit loading and success states', () async {
+      final List<PaletteState> states = [];
+      final subscription = bloc.stream.listen(states.add);
+
+      bloc.add(ExtractPaletteFromImage(Uint8List(0)));
+
+      await Future.delayed(const Duration(milliseconds: 800));
+
+      expect(states[0], isA<PaletteLoading>());
+      expect(states[1], isA<PaletteSuccess>());
+
+      final successState = states[1] as PaletteSuccess;
+      expect(successState.result.colors, isNotEmpty);
+
+      await subscription.cancel();
+    });
+
+    test('ClearPalette event should return bloc to PaletteInitial state', () async {
+      final List<PaletteState> states = [];
+      final subscription = bloc.stream.listen(states.add);
+
+      bloc.add(ExtractPaletteFromImage(Uint8List(0)));
+      await Future.delayed(const Duration(milliseconds: 800));
+
+      bloc.add(ClearPalette());
+      await Future.delayed(Duration.zero);
+
+      expect(states.last, isA<PaletteInitial>());
+
+      await subscription.cancel();
+    });
   });
 }
