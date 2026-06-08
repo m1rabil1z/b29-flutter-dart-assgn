@@ -4,6 +4,7 @@ import '../../../bloc/palette/palette_bloc.dart';
 import '../../../bloc/palette/palette_event.dart';
 import '../../../bloc/palette/palette_state.dart';
 import '../../../data/image_picker_service.dart';
+import '../widgets/color_swatch_grid.dart';
 
 class HomeScreen extends StatelessWidget {
   final ImagePickerService _pickerService = ImagePickerService();
@@ -64,7 +65,14 @@ class HomeScreen extends StatelessWidget {
     }
 
     if (state is PaletteSuccess) {
-      return const SizedBox.shrink();
+      return SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ColorSwatchGrid(result: state.result),
+          ],
+        ),
+      );
     }
 
     return ElevatedButton.icon(
