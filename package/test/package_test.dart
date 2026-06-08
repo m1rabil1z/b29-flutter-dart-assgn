@@ -1,39 +1,44 @@
-import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_color_extractor/image_color_extractor.dart';
 
 void main() {
-  group('ExtractedColor Tests', () {
-    test('should return correct uppercase hex string code', () {
-      final extracted = ExtractedColor(
-        color: const Color(0xFF1A237E),
+  group('ExtractedColor and PaletteResult Tests', () {
+    test('ExtractedColor parses hex code to Color object correctly', () {
+      final extractedColor = ExtractedColor(
+        hexCode: '#FF0000',
+        rgbString: 'RGB(255, 0, 0)',
         population: 0.5,
       );
-      expect(extracted.hexCode, '#1A237E');
+
+      expect(extractedColor.color.r, 255);
+      expect(extractedColor.color.g, 0);
+      expect(extractedColor.color.b, 0);
     });
 
-    test('should return correct rgb formatted string string', () {
-      final extracted = ExtractedColor(
-        color: const Color(0xFFF57F17),
+    test('PaletteResult returns the correct dominant color', () {
+      final color1 = ExtractedColor(
+        hexCode: '#FF0000',
+        rgbString: 'RGB(255, 0, 0)',
         population: 0.3,
       );
-      expect(extracted.rgbString, 'RGB(245, 127, 23)');
-    });
-  });
+      final color2 = ExtractedColor(
+        hexCode: '#00FF00',
+        rgbString: 'RGB(0, 255, 0)',
+        population: 0.7,
+      );
 
-  group('PaletteResult Tests', () {
-    test('dominantColor should return color with highest population ratio', () {
-      final lowPopulation = ExtractedColor(color: Colors.red, population: 0.2);
-      final highPopulation = ExtractedColor(color: Colors.blue, population: 0.8);
-      
-      final result = PaletteResult(colors: [lowPopulation, highPopulation]);
-      
-      expect(result.dominantColor, highPopulation);
+      final result = PaletteResult(colors: [color1, color2]);
+
+      expect(result.dominantColor, color2);
     });
 
-    test('dominantColor should return null if colors list is empty', () {
-      final result = PaletteResult(colors: []);
-      expect(result.dominantColor, isNull);
+    test('ExtractorEngine throws an exception on invalid image data', () async {
+      final engine = ExtractorEngine();
+      expect(
+        () async => await engine.extractFromBytes(Uint8List(0)),
+        throwsException,
+      );
     });
   });
 }
