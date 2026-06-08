@@ -1,8 +1,12 @@
 import 'dart:typed_data';
+import 'package:image_picker/image_picker.dart';
 
 class ImagePickerService {
+  final ImagePicker _picker = ImagePicker();
+
   Future<Uint8List?> pickImageBytes() async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return Uint8List.fromList(List.generate(100, (index) => index % 255));
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image == null) return null;
+    return await image.readAsBytes();
   }
 }
