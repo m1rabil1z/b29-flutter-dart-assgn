@@ -5,12 +5,19 @@ import 'package:my_app/bloc/palette/palette_bloc.dart';
 import 'package:my_app/bloc/palette/palette_event.dart';
 import 'package:my_app/bloc/palette/palette_state.dart';
 
+class MockExtractorEngine implements ExtractorEngine {
+  @override
+  Future<List<int>> extractFromBytes(Uint8List bytes, {int? maxColors}) async {
+    return [0xFF0000, 0x00FF00, 0x0000FF];
+  }
+}
+
 void main() {
   late ExtractorEngine engine;
   late PaletteBloc bloc;
 
   setUp(() {
-    engine = ExtractorEngine();
+    engine = MockExtractorEngine();
     bloc = PaletteBloc(engine: engine);
   });
 
@@ -29,7 +36,7 @@ void main() {
 
       bloc.add(ExtractPaletteFromImage(Uint8List(0)));
 
-      await Future.delayed(const Duration(milliseconds: 800));
+      await Future.delayed(const Duration(milliseconds: 100));
 
       expect(states[0], isA<PaletteLoading>());
       expect(states[1], isA<PaletteSuccess>());
@@ -45,7 +52,7 @@ void main() {
       final subscription = bloc.stream.listen(states.add);
 
       bloc.add(ExtractPaletteFromImage(Uint8List(0)));
-      await Future.delayed(const Duration(milliseconds: 800));
+      await Future.delayed(const Duration(milliseconds: 100));
 
       bloc.add(ClearPalette());
       await Future.delayed(Duration.zero);
