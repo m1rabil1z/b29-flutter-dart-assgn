@@ -1,6 +1,7 @@
 name: image_color_extractor
 description: "A standalone Dart engine for parsing raw image byte data and calculating dominant color coordinates."
 version: 0.0.1
+repository: https://github.com/m1rabil1z/b29-flutter-dart-assgn/tree/main/package
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -16,9 +17,4 @@ dev_dependencies:
   flutter_lints: ^3.0.0
 
 flutter:
-  plugin:
-    platforms:
-      android:
-        nullsafety: true
-      web:
-        nullsafety: true
+  uses-material-design: false
