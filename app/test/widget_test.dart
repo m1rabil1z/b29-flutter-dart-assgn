@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_color_extractor/image_color_extractor.dart';
-import 'package:my_app/bloc/palette/palette_bloc.dart';
-import 'package:my_app/bloc/palette/palette_event.dart';
-import 'package:my_app/bloc/palette/palette_state.dart';
+import 'package:color_extractor_app/bloc/palette/palette_bloc.dart';
+import 'package:color_extractor_app/bloc/palette/palette_event.dart';
+import 'package:color_extractor_app/bloc/palette/palette_state.dart';
 
 class MockExtractorEngine implements ExtractorEngine {
   @override

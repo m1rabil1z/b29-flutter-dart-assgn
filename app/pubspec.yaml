@@ -1,4 +1,4 @@
-name: my_app
+name: color_extractor_app
 description: "A beautiful Flutter application for extracting custom color palettes from images."
 publish_to: 'none'
 version: 1.0.0+1
